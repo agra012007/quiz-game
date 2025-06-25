@@ -1,0 +1,150 @@
+import tkinter as tk
+from tkinter import messagebox , simpledialog
+from random import shuffle
+ 
+ 
+ 
+ 
+ 
+ 
+class Quizgames:
+ 
+    def __init__(self,root):
+        self.root=root
+        self.leaderboard = []
+        self.load_leaderboard()
+        self.root.title('Quiz Game')
+       
+ 
+        self.question=[
+            {
+                'question':'what artist has the album 25 released in 2015?',
+                'options':['Taylor swift','Rihanna','Beyonce','Adele'],
+                'answer':'Adele'
+            },
+            {
+                'question':'In the tv show "Friends" who is Ross Gellers second wife?',
+                'options':['Emily','Rachel','Susan','Carol'],
+                'answer':'Emily'
+            },
+            {
+                'question':'Which movie won the Academy award in 2020?',
+                'options':['1917','Joker','Parasite','Once Upon a Time in Hollywood'],
+                'answer':'Parasite'
+            },
+            {
+                'question':'Which video game was adaptaed into live action series on prime video in 2024?',
+                'options':['The last of us','Fallout','Halo','Cyberpunk 2077'],
+                'answer':'Fallout'
+            },
+            {
+                'question':'Which animated film won the oscar for best animated feature in 2024?',
+                'options':['Spider-man: across the spider-verse','Elemantal','The boy and the heron','Super mario bros. movie'],
+                'answer':'The boy and the heron'
+            },
+            {
+                'question':'What phrase is used to describe wishful thinking?',
+                'options':['Its giving..','Eat the rich','Thats so real','Delulu is the solulu'],
+                'answer':'Delulu is the solulu'
+            },
+            {
+                'question':'what was the name of Kendricks diss to Drake?',
+                'options':['Back to back','Meet the grahams','Tv','No vaseline'],
+                'answer':'Meet the grahams'
+            },
+            {
+                'question':'Which 2025 movie is bringing back a classic horror franchise with a fresh reboot?',
+                'options':['Scream 7','Wolf man','Saw XI','The conjuring: last rites'],
+                'answer':'Wolf man'
+            },
+            {
+                'question':'What is the most cazy food trend this year?',
+                'options':['Cotton candy pasta','Glow in the dark lattes',' Edible candy wax','pickles and penut butter'],
+                'answer':' Edible candy wax'
+            },
+            {
+                'question':'Who is the best?',
+                'options':['The quiz maker :)','You :(','None of the above','Random'],
+                'answer':'The quiz maker :)'
+            },
+        ]
+        self.score=0
+        self.current_question=0
+ 
+        self.question_label=tk.Label(self.root,text='',font=('arial',14),wraplength=400)
+        self.question_label.pack(pady=20)
+ 
+        self.option_button=[]
+        for i in range(4):
+          button=tk.Button(self.root,text='',font=('arial',14),width=30,command=lambda i=i: self.check_answer(i))
+          button.pack(pady=5)
+          self.option_button.append(button)
+ 
+        self.score_label=tk.Label(self.root,text='Score: 0',font=('arial',12),wraplength=400)
+        self.score_label.pack(pady=20)
+ 
+        self.next_question()
+       
+    def next_question(self):
+       if self.current_question < len(self.question):
+          question=self.question[self.current_question]
+          self.question_label.config(text=question['question'])
+          option=question['options']
+          shuffle(option)
+          for i in range(4):
+             self.option_button[i].config(text=option[i])
+          self.score_label.config(text='score: {}'. format(self.score))
+       else:
+          self.end_game()
+ 
+    def check_answer(self,selected_option):
+        question=self.question[self.current_question]
+        selected_answer = question['options'][selected_option]
+        correct_answer=question['answer']
+        if selected_answer==correct_answer:
+           self.score+=1
+        self.current_question +=1
+        self.next_question()
+ 
+    def end_game(self):
+      player_name = tk.simpledialog.askstring('Name','Enter your name')
+      if player_name:
+         self.leaderboard.append((player_name, self.score))
+         self.leaderboard.sort(key=lambda x: x [1], reverse=True)
+         self.save_leaderboard()
+      self.show_leaderboard()
+ 
+    def show_leaderboard(self):
+         leaderboard_text = 'leaderboard:\n'
+         for i, (name, score) in enumerate(self.leaderboard):
+            leaderboard_text += f'{i + 1}. {name}: {score}\n'
+         messagebox.showinfo('Game Over', f'Quiz has ended!\nYour Score: {self.score}\n\n{leaderboard_text}')
+ 
+    def save_leaderboard(self):
+         with open('leaderboard.txt', 'w') as file:
+            for name, score in self.leaderboard:
+              file.write(f'{name},{score}\n')
+ 
+    def load_leaderboard(self):
+      try:
+          with open('leaderboard.txt', 'r') as file:
+            for line in file:
+             name, score = line.strip().split(',')
+             self.leaderboard.append((name, int(score)))
+          self.leaderboard.sort(key=lambda x: x[1], reverse=True)
+      except FileNotFoundError:
+           pass
+ 
+ 
+ 
+ 
+root=tk.Tk()  
+ 
+ 
+quiz_game=Quizgames(root)
+   
+root.mainloop()
+ 
+ 
+ 
+ 
